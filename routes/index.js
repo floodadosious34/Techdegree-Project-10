@@ -13,21 +13,75 @@ function asyncHandler(cb){
     } catch(error){
       // Forward error to the global error handler
       next(error);
-      // res.status(500).send(error);
     }
   }
 }
 /* GET home page. */
 router.get('/', asyncHandler(async (req, res) => { 
-  // res.render('index', { title: 'Express' });
-    // const allBooks = await Book.findAll();
-    // res.json(allBooks)
     res.redirect('books');
 }));
 
+// Function for appending the proper amount of buttons to page
+function addButtons (pages) {
+  const buttons = []
+  for (let i=1; i<= pages; i++) {
+    buttons.push({
+      buttonNumber: i,
+      className: "button"
+    })
+  }
+  return buttons
+}
+
 router.get('/books', asyncHandler(async (req, res) => {
-  const allBooks = await Book.findAll();
-  res.render('index', {allBooks, title: 'Books'})
+  const pageNumber = Number.parseInt(req.query.page);
+  let { searchTerm } = req.query
+  let size = 5;
+  let page = 0;
+
+  // sets page number based on page numer passed into req.query
+  if (!Number.isNaN(pageNumber) && pageNumber > 0) {
+    page = pageNumber
+  } else {
+    page = 0
+  }
+  
+  // searchTerm passed in is checked and used for setting up sequel query.
+  if (!searchTerm) {
+    const { count, rows } = await Book.findAndCountAll({
+      limit: size,
+      offset: page * size
+    });
+    const totalNumOfBooks= count;
+    const allBooks = rows;
+  
+    let totalPages = Math.ceil(totalNumOfBooks / size)
+    let buttons = addButtons(totalPages)
+    res.render('index', {allBooks, buttons, title: 'Books'})
+  } else {
+    const { count, rows }= await Book.findAndCountAll({
+      where: { 
+        [Op.or]: { // SELECT * FROM GET WHERE title is like searchTerm OR author is like searchTerm...;
+        title: { [Op.like]: `%${searchTerm}%`}, //WHERE title LIKE '%${searchTerm}%'	Finds any values that have "searchTerm" in any position
+        author: { [Op.like]: `%${searchTerm}%`},
+        genre: { [Op.like]: `%${searchTerm}%`},
+        year: { [Op.like]: `%${searchTerm}%`}
+        }
+    }})
+    const allBooks = rows;
+    const totalNumOfBooks = count;
+    const totalPages = Math.ceil(totalNumOfBooks/size);
+    const buttons = addButtons(totalPages)
+
+    let message;
+    if (buttons.length === 0) {
+      message = `Sorry! No match for "${searchTerm}"`;
+    } else {
+      message = `We found ${totalNumOfBooks} matches for "${searchTerm}"`
+    }
+    res.render('index', { allBooks, buttons, message, title: 'Books'})
+  }
+ 
 }));
 
 router.get('/books/new', asyncHandler(async (req, res) => {
@@ -38,7 +92,6 @@ router.post('/books/new', asyncHandler(async (req, res) => {
   let book;
   try {
     book = await Book.create(req.body);
-    console.log(req.body)
     res.redirect("/books");  //+ book.id);
   } catch (error) {
     if (error.name === "SequelizeValidationError") { // checking the error
@@ -56,7 +109,6 @@ router.post('/books/new', asyncHandler(async (req, res) => {
 
 router.get('/books/:id', asyncHandler(async (req, res) => {
   const book = await Book.findByPk(req.params.id);
-  console.log(book)
   if (book) {
     res.render("update-book", { book, title: book.title }); 
   } else {
@@ -67,7 +119,6 @@ router.get('/books/:id', asyncHandler(async (req, res) => {
 router.post('/books/:id/update', asyncHandler(async (req, res) => {
   let book;
   try {
-    console.log(req.params.body)
     book = await Book.findByPk(req.params.id);
     if(book) {
       await book.update(req.body);

@@ -5,6 +5,11 @@ block content
   h1 Books
   p
     a.button(href='/books/new') Create New Book
+    form(action="/books", method="get" id="searchForm")
+      input(type="search", name="searchTerm", id="search", value=`${searchTerm || ""}`)
+      input(type="submit", value="Search" class="button search")
+    if message 
+      p= message
   table
     thead
       tr
@@ -21,33 +26,9 @@ block content
           td #{book.author}
           td #{book.genre}
           td #{book.year}
+  ul.pagination 
+    each button in buttons 
+      li
+        a(class="button", href=`/books?page=${button.buttonNumber - 1}`)= button.buttonNumber
 
-  //- form.search(action='/books' method='get')
-  //-   input#search(type='text' name='search' placeholder='Search for a book...')
-  //-   input.button(type='submit' value='search')
-  //-   if search 
-  //-     a.button(href='/') Show All
-  //- if search 
-  //-   p Your search for "#{search}" returned #{count} results. Page #{page} of #{pages}
-  //- p
-  //-   a.button(href='/books/new') Create New Book
-  //- table
-  //-   thead
-  //-     tr
-  //-       th Title
-  //-       th Author
-  //-       th Genre
-  //-       th Year
-  //-   tbody
-  //-     each book in rows
-  //-       tr
-  //-         td 
-  //-           a(href=`/books/${book.id}`) #{book.title}
-  //-         td #{book.author}
-  //-         td #{book.genre}
-  //-         td #{book.year}
-  //- if pages > 1
-  //-   - let pageNums = 1
-  //-     nav.nav
-  //-       while pageNums <= pages 
-  //-         a(href=`/books/?search=${search || ''}&page=${pageNums}`)= pageNums++
+  

@@ -49,11 +49,6 @@ app.use(function(err, req, res, next) {
     err.message = err.message || `Oops! it look something went wrong on the server.`;
     res.status(err.status || 500)
   }
-
-
-  // render the error page
-  // res.status(err.status || 500);
-  // res.render('error', { err });
 });
 
 // test database connection and sync

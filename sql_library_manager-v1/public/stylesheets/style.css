@@ -3,25 +3,34 @@ body {
   font: 18px "Garamond", serif;
 }
 
-a {
-  color: #019875;
-  text-decoration: none;
-  font-weight: bold;
-  transition: 0.4s;
+ul.pagination {
+  display: flex;
 }
 
-  a:hover {
-    color: black;
-  }
+.pagination li {
+  margin-left: 10px;
+}
+
+a {
+  /* color: #019875;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.4s; */
+}
+
+a:hover {
+  color: black;
+}
 
 a.button, input[type=submit] {
-  color: white;
+  /* color: white;
   background: #019875;
   font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
   padding: 10px 14px 12px;
   font-size: 14px;
   border-radius: 2px;
   cursor: pointer;
+  display: inline; */
 }
 
 form a.button, input[type=submit] {
@@ -33,9 +42,9 @@ input[type=submit] {
   border: 0;
 }
 
-  a.button:hover, input[type=submit]:hover {
-    background-color: #01b189;
-  }
+a.button:hover, input[type=submit]:hover {
+  background-color: #01b189;
+}
 
 p {
   margin: 20px auto;
@@ -95,3 +104,4 @@ input[type=text] {
 .error {
   color: rgb(236, 15, 15);
 }
+

@@ -3,6 +3,14 @@ body {
   font: 18px "Garamond", serif;
 }
 
+.pagination {
+  display: flex;
+}
+
+.pagination li {
+  margin-left: 10px;
+}
+
 a {
   color: #019875;
   text-decoration: none;
